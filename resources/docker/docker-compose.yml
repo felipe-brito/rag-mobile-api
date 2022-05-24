@@ -1,0 +1,59 @@
+version: '3'
+services:
+    postgres:
+      image: postgres:latest
+      restart: always
+      container_name: postgres
+      environment:
+        POSTGRES_DB: "rag-mobile-api"
+        POSTGRES_USER: "postgres"
+        POSTGRES_PASSWORD: "postgres"
+        PGDATA: ""
+      volumes:
+        - postgres-data:/var/lib/postgres/data
+      ports:
+        - "5432:5432"
+
+    pgadmin:
+      image: fenglc/pgadmin4
+      restart: always
+      container_name: pgadmin
+      depends_on:
+        - postgres
+      environment:
+        DEFAULT_USER: "pgadmin4@pgadmin.org"
+        DEFAULT_PASSWORD: "admin"
+      volumes:
+        - pgadmin-data:/root/.pgadmin
+      ports:
+        - "5050:5050"
+      links:
+        - postgres
+
+    redis:
+      image: redis:latest
+      restart: always
+      container_name: redis
+      volumes:
+        - redis-data:/var/lib/redis/data
+      ports:
+        - "6379:6379"
+
+    sonarqube:
+      image: sonarqube:8-community
+      restart: always
+      container_name: sonarqube
+      ports:
+        - "9000:9000"
+      volumes:
+        - sonarqube-data:/opt/sonarqube/data
+        - sonarqube-logs:/opt/sonarqube/logs
+        - sonarqube-extensions:/opt/sonarqube/extensions
+
+volumes:
+  postgres-data:
+  pgadmin-data:
+  redis-data:
+  sonarqube-data:
+  sonarqube-logs:
+  sonarqube-extensions:
